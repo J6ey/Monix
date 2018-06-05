@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/view_quote"
+        android:layout_width="359dp"
+        android:layout_height="84dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="11dp"
+        android:text="quote"
+        android:textColor="#dfdfdf"
+        android:textSize="16sp"
+        android:autoSizeMinTextSize="16sp"
+        android:autoSizeTextType="uniform"/>
+
+    <TextView
+        android:id="@+id/view_author"
+        android:layout_width="153dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/view_quote"
+        android:layout_below="@+id/view_quote"
+        android:text="author"
+        android:textColor="#6f92bd"
+        android:textSize="15sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/view_speech"
+        android:layout_width="139dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_quote"
+        android:layout_toEndOf="@+id/view_author"
+        android:text=""
+        android:textColor="#1cc79c"
+        android:textSize="12sp" />
+
+</RelativeLayout>
