@@ -2,9 +2,9 @@
 ***
   Monix is an Android application and a learning tool that generates meaningful or random mnemonics
 
-  and anagrams from any contextual acronyms or word scrambles arranged from study materials
+  and anagrams from contextual acronyms or word scrambles arranged from study materials
 
-  or a list of words. 
+  or lists. 
 
 
 
