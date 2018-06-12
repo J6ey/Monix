@@ -11,7 +11,7 @@
 ### Quote (feature)
   By converting an acronym to expressive quotes, sayings, or idioms (as mnemonic devices) one can 
 
-  better study exam materials by easily recalling those terms.     
+  better prepare for exam materials by easily recalling those terms.     
 
   For example, **the color spectrum ROYBIV is an acronym** 
 
