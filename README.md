@@ -11,7 +11,7 @@
 ### Quote (feature)
   By converting an acronym to expressive quotes, sayings, or idioms (as mnemonic devices) one can 
 
-  better prepare for exam materials by easily recalling those terms.     
+  better prepare for exam materials or recall a list of groceries by easily recalling those terms.     
 
   For example, **the color spectrum ROYBIV is an acronym** 
 
@@ -23,7 +23,7 @@
 
   By rearranging a word scramble to generate new English words, one can easily recall a list of 
 
-  terms by only recalling the rearranged-word. 
+  terms by recalling the newly-arranged words. 
 
   For example, **we can generate many variants of words with these letters: L, I, S, T, E, N**
 
