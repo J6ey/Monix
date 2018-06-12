@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,7 +47,6 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
     private TextView generateResults;
     private ProgressBar progressBar;
     private ListView listView;
-    private HashSet<String> permSet;
     private ArrayList<String> permList, quoteList, authorList, speechList, randomList;
     private FirebaseDatabase database;
     private DatabaseReference reference;
@@ -107,12 +107,13 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(isRandom){
                     new randomParse().execute();
-
                 } else if(isPermutable && !anagram) {
-                    permSet = new LinkedHashSet<>();
-                    int n = acronym.length();
-                    permute(acronym, 0, n - 1); // generates permutation set
-                    permList = new ArrayList<>(permSet);
+                    permList = new ArrayList<>();
+                    char[] acro = acronym.toCharArray();
+                    Arrays.sort(acro);
+                    do {
+                        permList.add(new String(acro));
+                    } while (permuteLexically(acro));
                     listView = findViewById(R.id.resultsList);
                     for (int i = 0; i < permList.size(); i++) {
                         String find = permList.get(i);
@@ -235,59 +236,67 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
                         break;
                     }
                 }
-                URL oxfordLink, owlLink;
                 for (int i = 0; i < authorList.size(); i++) {
                     try {
-                        oxfordLink = new URL("https://od-api.oxforddictionaries.com:443/api/v1/entries/en/" + authorList.get(i));
-                        HttpsURLConnection urlConnection = (HttpsURLConnection) oxfordLink.openConnection();
-                        urlConnection.setRequestProperty("Accept", "application/json");
-                        urlConnection.setRequestProperty("app_id", APP_ID);
-                        urlConnection.setRequestProperty("app_key", APP_KEY);
-
-                        if (urlConnection.getResponseCode() != 404) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                            StringBuilder builder = new StringBuilder();
-                            String line = null;
-                            while ((line = reader.readLine()) != null) {
-                                builder.append(line + "\n");
+                        String durl = "http://www.dictionary.com/browse/" + authorList.get(i);
+                        doc = Jsoup.connect(durl).timeout(6000).get();
+                        String exists = doc.select("div:contains(No results found for)").text();
+                        if (exists.equals("")) {
+                            StringBuilder editor;
+                            group = doc.select("section.css-1sdcacc.e10vl5dg0 > ol > li > span:last-child.css-4x41l7.e10vl5dg6");
+                            row = group.get(0);
+                            String def = row.ownText();
+                            editor = new StringBuilder(def);
+                            if(def.endsWith(":")){
+                                editor.deleteCharAt(def.length()-1);
                             }
-                            JSONObject jObject = new JSONObject(builder.toString());
-                            JSONArray resultsArray = jObject.getJSONArray("results");
-                            JSONObject resultsObj = resultsArray.getJSONObject(0);
-                            JSONArray leXArray = resultsObj.getJSONArray("lexicalEntries");
-                            JSONObject lexObj = leXArray.getJSONObject(0);
-                            String category = lexObj.getString("lexicalCategory");
-                            JSONArray entriesArray = lexObj.getJSONArray("entries");
-                            JSONObject entriesObj = entriesArray.getJSONObject(0);
-                            JSONArray sensesArray = entriesObj.getJSONArray("senses");
-                            JSONObject sensesObj = sensesArray.getJSONObject(0);
-                            JSONArray defArray = sensesObj.getJSONArray("definitions");
-                            String def = defArray.getString(0);
-                            quoteList.add(def);
-                            speechList.add(category.toLowerCase());
+                            quoteList.add(editor.toString());
+                            String speech = doc.select("span.luna-pos").first().text();
+                            editor = new StringBuilder(speech);
+                            if(!Character.isLetter(speech.charAt(speech.length()-1))){
+                                editor.deleteCharAt(speech.length()-1);
+                            }
+                            speechList.add(editor.toString());
                         } else {
-                            owlLink = new URL("https://owlbot.info/api/v2/dictionary/" + authorList.get(i) + "?format=json");
-                            HttpsURLConnection owlConnection= (HttpsURLConnection) owlLink.openConnection();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(owlConnection.getInputStream()));
-                            StringBuilder builder = new StringBuilder();
-                            String line = null;
-                            while ((line = reader.readLine()) != null) {
-                                builder.append(line + "\n");
-                            }
-                            JSONArray jArray = new JSONArray(builder.toString());
-                            if(jArray.length() == 0){
+                            URL oxfordLink = new URL("https://od-api.oxforddictionaries.com:443/api/v1/entries/en/" + authorList.get(i));
+                            HttpsURLConnection urlConnection = (HttpsURLConnection) oxfordLink.openConnection();
+                            urlConnection.setRequestProperty("Accept", "application/json");
+                            urlConnection.setRequestProperty("app_id", APP_ID);
+                            urlConnection.setRequestProperty("app_key", APP_KEY);
+                            if(urlConnection.getResponseCode() != 404) {
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                                StringBuilder builder = new StringBuilder();
+                                String line = null;
+                                while ((line = reader.readLine()) != null) {
+                                    builder.append(line + "\n");
+                                }
+                                JSONObject jObject = new JSONObject(builder.toString());
+                                JSONArray resultsArray = jObject.getJSONArray("results");
+                                JSONObject resultsObj = resultsArray.getJSONObject(0);
+                                JSONArray leXArray = resultsObj.getJSONArray("lexicalEntries");
+                                JSONObject lexObj = leXArray.getJSONObject(0);
+                                String category = lexObj.getString("lexicalCategory");
+                                JSONArray entriesArray = lexObj.getJSONArray("entries");
+                                JSONObject entriesObj = entriesArray.getJSONObject(0);
+                                JSONArray sensesArray = entriesObj.getJSONArray("senses");
+                                JSONObject sensesObj = sensesArray.getJSONObject(0);
+                                JSONArray defArray = sensesObj.getJSONArray("definitions");
+                                String def = defArray.getString(0);
+                                quoteList.add(def);
+                                speechList.add(category.toLowerCase());
+                            } else {
                                 authorList.remove(i);
                                 i -= 1;
-                            } else {
-                                JSONObject firstObj = jArray.getJSONObject(0);
-                                String type = firstObj.getString("type");
-                                String def = firstObj.getString("definition");
-                                quoteList.add(def);
-                                speechList.add(type);
                             }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        if(e.getStackTrace()[0].getLineNumber() == 254){
+                            speechList.add("");
+                        } else if (e.getStackTrace()[0].getLineNumber() == 247){
+                            authorList.remove(i);
+                            i -= 1;
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -324,25 +333,31 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
         startActivity(intent);
     }
 
-    private void permute(String str, int left, int right){
-        if (left == right){
-            permSet.add(str);
-        } else {
-            for (int i = left; i <= right; i++) {
-                str = swap(str,left,i);
-                permute(str, left+1, right);
-                str = swap(str,left,i);
+    public static boolean permuteLexically(char[] data) {
+        int k = data.length - 2;
+        while (data[k] >= data[k + 1]) {
+            k--;
+            if (k < 0) {
+                return false;
             }
         }
+        int l = data.length - 1;
+        while (data[k] >= data[l]) {
+            l--;
+        }
+        swap(data, k, l);
+        int length = data.length - (k + 1);
+        for (int i = 0; i < length / 2; i++) {
+            swap(data, k + 1 + i, data.length - i - 1);
+        }
+        return true;
     }
 
-    private String swap(String a, int i, int j) {
+    public static void swap(char[] a, int i, int j) {
         char temp;
-        char[] charArray = a.toCharArray();
-        temp = charArray[i] ;
-        charArray[i] = charArray[j];
-        charArray[j] = temp;
-        return String.valueOf(charArray);
+        temp = a[i] ;
+        a[i] = a[j];
+        a[j] = temp;
     }
 
     private class PhraseAdapter extends BaseAdapter {
