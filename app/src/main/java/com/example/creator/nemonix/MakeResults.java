@@ -72,7 +72,6 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
         Intent intent = getIntent();
         acronym = intent.getExtras().getString("abbrev");
         isPermutable = intent.getExtras().getBoolean("permutable");
-        boolean isComplete = intent.getExtras().getBoolean("complete");
         anagram = intent.getExtras().getBoolean("anagram");
         isRandom = intent.getExtras().getBoolean("random");
         if(isRandom){
@@ -243,17 +242,28 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
                         String exists = doc.select("div:contains(No results found for)").text();
                         if (exists.equals("")) {
                             StringBuilder editor;
-                            group = doc.select("section.css-1sdcacc.e10vl5dg0 > ol > li > span:last-child.css-4x41l7.e10vl5dg6");
+                            Elements altDef = doc.select("section.css-1sdcacc.e10vl5dg0 > ol > li > span > a");
+                            String xDef = "";
+                            if(altDef.hasClass("luna-xref")){
+                                Element selectDef = altDef.get(0);
+                                xDef = selectDef.ownText();
+                            }
+                            group = doc.select("section.css-1sdcacc.e10vl5dg0 > ol > li > span:last-child.css-9sn2pa.e10vl5dg6");
                             row = group.get(0);
                             String def = row.ownText();
                             editor = new StringBuilder(def);
                             if(def.endsWith(":")){
                                 editor.deleteCharAt(def.length()-1);
                             }
+                            if((def.equals(".") || def.isEmpty()) && !xDef.isEmpty()) {
+                                editor.insert(0, xDef);
+                            } else if(def.charAt(def.length()-1) == '.' && def.charAt(def.length()-2) == ' ' && !xDef.isEmpty()){
+                                editor.insert(def.length()-2, " " + xDef);
+                            }
                             quoteList.add(editor.toString());
-                            String speech = doc.select("span.luna-pos").first().text();
+                            String speech = doc.select("section.css-1sdcacc.e10vl5dg0 > header > span > span").first().text();
                             editor = new StringBuilder(speech);
-                            if(!Character.isLetter(speech.charAt(speech.length()-1))){
+                            if(speech.charAt(speech.length()-1) == ','){
                                 editor.deleteCharAt(speech.length()-1);
                             }
                             speechList.add(editor.toString());
@@ -291,9 +301,9 @@ public class MakeResults extends AppCompatActivity implements View.OnClickListen
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        if(e.getStackTrace()[0].getLineNumber() == 254){
+                        if(e.getStackTrace()[0].getLineNumber() == 265){
                             speechList.add("");
-                        } else if (e.getStackTrace()[0].getLineNumber() == 247){
+                        } else if (e.getStackTrace()[0].getLineNumber() == 253){
                             authorList.remove(i);
                             i -= 1;
                         }

@@ -25,9 +25,9 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
 
     private final int RESULTS = 2;
     private TextView instructions, question;
-    private ImageButton permTip, compTip;
+    private ImageButton permTip;
     private EditText textfield;
-    private CheckBox permutable, complete;
+    private CheckBox permutable;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -40,13 +40,11 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
         permTip = findViewById(R.id.permhelp);
-        compTip = findViewById(R.id.comphelp);
         String text = "<font color='#dfdfdf'>What would you like to </font><font color='#1cc79c'>recall</font>" +
                 "<font color='#dfdfdf'>?</font>";
         String text2 = "<font color='#1cc79c'>Transform</font><font color='#dfdfdf'>" +
                 " your acronym into a meaning quote or idiom<br><br>such as...</font>";
         permutable = findViewById(R.id.permutability);
-        complete = findViewById(R.id.completeness);
         instructions = findViewById(R.id.learnInstruction);
         question = findViewById(R.id.learnText);
         instructions.setText(Html.fromHtml(text2), TextView.BufferType.SPANNABLE);
@@ -75,7 +73,6 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         permTip.setOnClickListener(this);
-        compTip.setOnClickListener(this);
     }
 
     public boolean areAllLetters(String acronym){
@@ -91,11 +88,6 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             intent.putExtra("permutable", false);
         }
-        if(complete.isChecked()){
-            intent.putExtra("complete", true);
-        } else {
-            intent.putExtra("complete", false);
-        }
         startActivity(intent);
     }
 
@@ -110,11 +102,7 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
     public void showTooltip(View v, int gravity, int id) {
         ImageButton ib = (ImageButton) v;
         String perm = "Is your\nacronym\narrangeable?";
-        String comp = "Full match\nof your\nacronym?";
-        Tooltip.Builder tipPerm = new Tooltip.Builder(ib).setText(comp)
-                .setTextColor(0xdfdfdfdf).setGravity(gravity).setCornerRadius(8f).setDismissOnClick(true).setCancelable(true)
-                .setBackgroundColor(Color.BLACK);
-        Tooltip.Builder tipComp = new Tooltip.Builder(ib).setText(perm)
+        Tooltip.Builder tipPerm = new Tooltip.Builder(ib).setText(perm)
                 .setTextColor(0xdfdfdfdf).setGravity(gravity).setCornerRadius(8f).setDismissOnClick(true).setCancelable(true)
                 .setBackgroundColor(Color.BLACK);
 
@@ -123,11 +111,5 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
                 tipPerm.show();
             }
         }
-        if(id == R.id.comphelp){
-            if(!tipComp.build().isShowing()){
-                tipComp.show();
-            }
-        }
-
     }
 }
