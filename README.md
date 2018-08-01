@@ -1,17 +1,17 @@
 # Monix
 ***
-  Monix is an Android application and a learning tool that generates meaningful or random mnemonics
+  Monix is an Android learning tool that generates meaningful and random mnemonics
 
-  and anagrams from contextual acronyms or word scrambles arranged from study materials
+  and anagrams from contextual acronyms to word scrambles arranged from study materials
 
-  or lists. 
+  and lists. 
 
 
 
 ### Quote (feature)
-  By converting an acronym to expressive quotes, sayings, or idioms (as mnemonic devices) one can 
+  By converting a word scramble to expressive quotes, sayings, or idioms to mnemonic devices one can 
 
-  better prepare for exam materials or recall a list of groceries by easily recalling those terms.     
+  better prep for exams or recall a list of groceries via simple memorization and recollection.     
 
   For example, **the color spectrum ROYBIV is an acronym** 
 
@@ -21,7 +21,7 @@
 
 ### Anagram (feature)
 
-  By rearranging a word scramble to generate new English words, one can easily recall a list of 
+  By rearranging a word scramble to generate a list of English words, one can easily recall a list of 
 
   terms by recalling the newly-arranged words. 
 
