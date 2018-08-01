@@ -89,6 +89,7 @@ public class MakeActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("permutable", false);
         }
         startActivity(intent);
+        finish();
     }
 
     public void onClick(View v){

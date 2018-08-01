@@ -1,5 +1,6 @@
 package com.example.creator.nemonix;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,7 +50,7 @@ public class AnagramActivity extends AppCompatActivity{
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if(actionId == EditorInfo.IME_ACTION_DONE){
                     if(textView.getText().length() < 2){
-                        Tooltip charError = new Tooltip.Builder(textView).setText("Must have at least 2")
+                        Tooltip charError = new Tooltip.Builder(textView).setText("Must have at least 2 letters")
                                 .setTextColor(0xdfdfdfdf).setGravity(Gravity.BOTTOM).setCornerRadius(8f).setDismissOnClick(true).setCancelable(true)
                                 .setBackgroundColor(Color.parseColor("#7F00FF")).show();
                     } else if(areAllLetters(textView.getText().toString())){
@@ -74,5 +76,6 @@ public class AnagramActivity extends AppCompatActivity{
         intent.putExtra("anagram", true);
         intent.putExtra("random", false);
         startActivity(intent);
+        finish();
     }
 }
